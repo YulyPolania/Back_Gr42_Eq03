@@ -10,7 +10,7 @@ public class Usuario implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private Long idCard;
+	private Long idUser;
 
 	private String name;
 	private String email;
@@ -23,9 +23,9 @@ public class Usuario implements Serializable {
 	public Usuario() {
 	}
 
-	public Usuario(Long idCard, String name, String email, String sucursal, String role, boolean status, String password,
+	public Usuario(Long idUser, String name, String email, String sucursal, String role, boolean status, String password,
 			String user) {
-		this.idCard = idCard;
+		this.idUser = idUser;
 		this.name = name;
 		this.email = email;
 		this.sucursal = sucursal;
@@ -36,11 +36,11 @@ public class Usuario implements Serializable {
 	}
 
 	public Long getIdCard() {
-		return this.idCard;
+		return this.idUser;
 	}
 
-	public void setIdCard(Long idCard) {
-		this.idCard = idCard;
+	public void setIdCard(Long idUser) {
+		this.idUser = idUser;
 	}
 
 	public String getName() {
