@@ -35,11 +35,11 @@ public class Usuario implements Serializable {
 		this.user = user;
 	}
 
-	public Long getIdCard() {
+	public Long getIdUser() {
 		return this.idUser;
 	}
 
-	public void setIdCard(Long idUser) {
+	public void setIdUser(Long idUser) {
 		this.idUser = idUser;
 	}
 
