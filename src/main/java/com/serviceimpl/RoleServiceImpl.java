@@ -10,11 +10,11 @@ import com.repository.RoleRepository;
 import com.service.RoleService;
 
 @Service
-public class RoleServiceImpl extends GenericImpl<Role, Integer> implements RoleService{
-	
+public class RoleServiceImpl extends GenericImpl<Role, Integer> implements RoleService {
+
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
 	@Override
 	protected CrudRepository<Role, Integer> getDao() {
 		return roleRepository;

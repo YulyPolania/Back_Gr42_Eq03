@@ -10,11 +10,11 @@ import com.repository.PermisoRepository;
 import com.service.PermisoService;
 
 @Service
-public class PermisoServiceImpl extends GenericImpl<Permiso, Integer> implements PermisoService{
-	
+public class PermisoServiceImpl extends GenericImpl<Permiso, Integer> implements PermisoService {
+
 	@Autowired
 	private PermisoRepository permisoRepository;
-	
+
 	@Override
 	protected CrudRepository<Permiso, Integer> getDao() {
 		return permisoRepository;

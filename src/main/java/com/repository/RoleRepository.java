@@ -6,5 +6,4 @@ import com.model.Role;
 
 public interface RoleRepository extends MongoRepository<Role, Integer> {
 
-
 }

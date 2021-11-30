@@ -10,11 +10,11 @@ import com.repository.SedeRepository;
 import com.service.SedeService;
 
 @Service
-public class SedeServiceImpl extends GenericImpl<Sede, Integer> implements SedeService{
-	
+public class SedeServiceImpl extends GenericImpl<Sede, Integer> implements SedeService {
+
 	@Autowired
 	private SedeRepository sedeRepository;
-	
+
 	@Override
 	protected CrudRepository<Sede, Integer> getDao() {
 		return sedeRepository;
