@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,6 +52,7 @@ public class UsuarioController {
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_SUPERADMIN')")
 	@GetMapping(value = "/find/{id}")
 	public ResponseEntity<?> find(@PathVariable Long id) {
 		Usuario user = null;
@@ -62,12 +65,14 @@ public class UsuarioController {
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		if (user == null) {
-			response.put("mensaje", "El usuario con la cédula: ".concat(id.toString().concat(" no existe en la base de datos!")));
+			response.put("mensaje",
+					"El usuario con la cédula: ".concat(id.toString().concat(" no existe en la base de datos!")));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Usuario>(user, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_SUPERADMIN')")
 	@PostMapping(value = "/save")
 	public ResponseEntity<?> save(@RequestBody Usuario usuario) {
 		Usuario user = null;
@@ -89,26 +94,33 @@ public class UsuarioController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_SUPERADMIN')")
 	@PutMapping(value = "/update/{id}")
 	public ResponseEntity<?> update(@RequestBody Usuario usuario, @PathVariable Long id) {
 		Usuario updateUser = null;
 		Map<String, Object> response = new HashMap<>();
-		if (usuario.validate() != null) {
-			response.put("mensaje", usuario.validate());
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-		}
+
 		try {
 			Usuario currentUser = usuarioService.get(id);
 			if (currentUser == null) {
-				response.put("mensaje", "El usuario con la cédula: ".concat(id.toString().concat(" no existe en la base de datos!")));
+				response.put("mensaje",
+						"El usuario con la cédula: ".concat(id.toString().concat(" no existe en la base de datos!")));
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			}
+			if (!currentUser.getPassword().equals(usuario.getPassword())) {
+				if (usuario.password() != null) {
+					response.put("mensaje", usuario.password());
+					return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+				}
+				currentUser.setPassword(bCryptPasswordEncoder.encode(usuario.getPassword()));
+			}
+			if (usuario.validate() != null) {
+				response.put("mensaje", usuario.validate());
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
 			}
 			currentUser.setEmailUsuario(usuario.getEmailUsuario());
 			currentUser.setNombreUsuario(usuario.getNombreUsuario());
 			currentUser.setUsername(usuario.getUsername());
-			if (!currentUser.getPassword().equals(usuario.getPassword())) {
-				currentUser.setPassword(bCryptPasswordEncoder.encode(usuario.getPassword()));
-			}
 			updateUser = usuarioService.save(currentUser);
 		} catch (DataAccessException e) {
 			response.put("mensaje", "Error al realizar la actualización en la base de datos!");
@@ -120,6 +132,8 @@ public class UsuarioController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
+	// @PreAuthorize("hasRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_SUPERADMIN')")
+	@Secured({"ROLE_MANAGER","ROLE_ADMIN","ROLE_SUPERADMIN",})
 	@DeleteMapping(value = "/delete/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		Usuario user = null;

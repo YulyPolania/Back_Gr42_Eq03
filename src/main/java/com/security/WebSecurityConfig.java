@@ -36,25 +36,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(usuarioServiceImpl).passwordEncoder(encoder());
-
 	}
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-				.anyRequest().authenticated()// por defecto siempre al final para todas las rutas sin asignarle permisos
+				.anyRequest().authenticated()
 				.and()
 				.csrf().disable()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 	}
-
-	// no es necesario configurar "/oauth/token" spring la reserva por defecto para
-	// la autenticación de las credenciales
-	// @Override
-	// protected void configure(HttpSecurity http)throws Exception{
-	// http
-	// .authorizeRequests()
-	// .antMatchers("/oauth/token").permitAll();
-	// }
 }

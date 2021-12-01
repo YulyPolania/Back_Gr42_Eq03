@@ -45,10 +45,15 @@ public class Usuario {
 			return "Correo electrónico inválido, se permiten hata 60 caracteres, sin espacios";
 		} else if (!isValid("^[a-zA-ZÀ-ÿ\\s]{8,40}$", this.nombreUsuario, 40)) {
 			return "Nombre inválido, sólo se permiten entre 8 y 40 caracteres";
-		} else if (!isValid("^[a-zA-Z0-9!@#$%^&.*]{8,100}$", this.password, 100)) {
-			return "La contraseña debe contener entre 8 y 100 caracteres sin espacios o caracteres especiales";
-		} else if (!isValid("^[a-zA-Z0-9_-]{4,40}$", this.username, 40)) {
+		}  else if (!isValid("^[a-zA-Z0-9_-]{4,40}$", this.username, 40)) {
 			return "El nombre de usuario debe contener entre 4 y 40 caracteres sin espacios.";
+		}
+		return null;
+	}
+
+	public String password(){
+		if (!isValid("^[a-zA-Z0-9!@#$%^&.*]{8,100}$", this.password, 100)) {
+			return "La contraseña debe contener entre 8 y 100 caracteres sin espacios o caracteres especiales";
 		}
 		return null;
 	}

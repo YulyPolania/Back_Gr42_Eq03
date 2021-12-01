@@ -13,8 +13,6 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Component;
 
 import com.model.Permiso;
-import com.model.Sede;
-import com.model.Usuario;
 
 import com.service.PermisoService;
 import com.service.SedeService;
@@ -34,31 +32,18 @@ public class AdditionalnfoToken implements TokenEnhancer {
 
 	// ---------extraer listado de permisos por usuario-------------------
 	public List<Permiso> getPermisos(String username) {
-		Usuario user = usuarioService.findByUserName(username);
-		Long id = user.getCedulaUsuario();
-		List<Permiso> permisos = new ArrayList<Permiso>();
-		for (Permiso registro : permisoService.getAll()) {
-			if (registro.getCedulaUsuario().equals(id)) {
-				permisos.add(registro);
-			}
-		}
-		return permisos;
+		Long cedulaUsuario = usuarioService.findByUserName(username).getCedulaUsuario();
+		return permisoService.findByCedulaUsuario(cedulaUsuario);
 	}
 	// -------------fin extraer listado de permisos por usuario-------------------
 
 	// ---------extraer listado de sedes por usuario-------------------
 	public List<String> getSedes(String username) {
-		Usuario user = usuarioService.findByUserName(username);
-		Long id = user.getCedulaUsuario();
+		Long cedulaUsuario = usuarioService.findByUserName(username).getCedulaUsuario();
+		List<Permiso> permisos = permisoService.findByCedulaUsuario(cedulaUsuario);
 		List<String> sedes = new ArrayList<String>();
-		for (Permiso registro : permisoService.getAll()) {
-			if (registro.getCedulaUsuario().equals(id)) {
-				for (Sede sede : sedeService.getAll()) {
-					if (sede.getIdSede().equals(registro.getIdSede())) {
-						sedes.add(sede.getCiudadSede());
-					}
-				}
-			}
+		for (Permiso i : permisos) {
+			sedes.add(sedeService.get(i.getIdSede()).getCiudadSede());
 		}
 		return sedes;
 	}
@@ -69,6 +54,7 @@ public class AdditionalnfoToken implements TokenEnhancer {
 		Map<String, Object> info = new HashMap<>();
 		info.put("sedes", getSedes(authentication.getName()).toArray());
 		info.put("permisos", getPermisos(authentication.getName()).toArray());
+		info.put("nombreCompleto", usuarioService.findByUserName(authentication.getName()).getNombreUsuario());
 		((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(info);
 		return accessToken;
 	}

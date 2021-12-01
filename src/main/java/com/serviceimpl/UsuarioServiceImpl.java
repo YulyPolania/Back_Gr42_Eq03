@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.commons.GenericImpl;
 import com.model.Permiso;
-import com.model.Role;
 import com.model.Usuario;
 import com.repository.UsuarioRepository;
 import com.service.PermisoService;
@@ -47,17 +46,10 @@ public class UsuarioServiceImpl extends GenericImpl<Usuario, Long> implements Us
 
 	// ---------extraer listado de roles por usuario-------------------
 	public List<String> getRoles(Long id) {
-		List<Permiso> permisos = new ArrayList<Permiso>();
+		List<Permiso> permisos = permisoService.findByCedulaUsuario(id);
 		List<String> roles = new ArrayList<String>();
-		for (Permiso registro : permisoService.getAll()) {
-			if (registro.getCedulaUsuario().equals(id)) {
-				permisos.add(registro);
-				for (Role rol : roleService.getAll()) {
-					if (rol.getIdRol().equals(registro.getIdRol())) {
-						roles.add(rol.getName());
-					}
-				}
-			}
+		for (Permiso i : permisos) {
+			roles.add(roleService.get(i.getIdRol()).getName());
 		}
 		return roles;
 	}

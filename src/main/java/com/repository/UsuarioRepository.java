@@ -8,6 +8,7 @@ import com.model.Usuario;
 
 @Repository
 public interface UsuarioRepository extends MongoRepository<Usuario, Long> {
+	
 	@Query
 	Usuario findByUsername(String username);
 

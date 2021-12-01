@@ -30,17 +30,17 @@ public class PermisoController {
 
 	@GetMapping(value = "/all")
 	public ResponseEntity<?> getAll() {
-		List<Permiso> permisoes = null;
+		List<Permiso> permisos = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
-			permisoes = permisoService.getAll();
+			permisos = permisoService.getAll();
 		} catch (DataAccessException e) {
 			response.put("mensaje", "Error al realizar la consulta en la base de datos!");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		if (permisoes != null) {
-			return new ResponseEntity<>(permisoes, HttpStatus.OK);
+		if (permisos != null) {
+			return new ResponseEntity<>(permisos, HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}

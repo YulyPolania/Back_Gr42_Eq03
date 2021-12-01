@@ -37,36 +37,30 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	@Autowired
 	private AdditionalnfoToken additionalnfoToken;
 
-	// configuracón ruta de acceso publica para solicitud de autenticación
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 		security.tokenKeyAccess("permitAll()")
 				.checkTokenAccess("isAuthenticated()");
 	}
 
-	// configuración clientes se deben registrar uno por uno
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 		clients.inMemory()
 				.withClient("webapp")
 				.secret(bCryptPasswordEncoder.encode("123"))
 				.scopes("read", "write")
-				.authorizedGrantTypes("password", "refresh_token")// password sirve para usuario y contraseña - refresh token
-																													// sirve para acceso renovado sin usar sesión - authetication
-																													// code sirve como una llave -
-				.accessTokenValiditySeconds(1 * 60)// duración tiempo de expiraiòn en segundos del primer token
-				.refreshTokenValiditySeconds(2 * 60); // duración tiempo de expiraiòn token de refresco en segundos del primer
-																							// token
+				.authorizedGrantTypes("password", "refresh_token")
+				.accessTokenValiditySeconds(1 * 60)
+				.refreshTokenValiditySeconds(2 * 60);
 	}
 
-	// autenticaciòn y validaciòn de token
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 		TokenEnhancerChain tokenEnhacerChain = new TokenEnhancerChain();
 		tokenEnhacerChain.setTokenEnhancers(Arrays.asList(additionalnfoToken, accessTokenConverter()));
 		endpoints.authenticationManager(authenticationManager)
 				.tokenStore(tokenStore())
-				.accessTokenConverter(accessTokenConverter())// añadir informaciòn al token (no info confidencial se puede decodificar
+				.accessTokenConverter(accessTokenConverter())
 				.userDetailsService((UserDetailsService) usuarioService)
 				.tokenEnhancer(tokenEnhacerChain);
 	}
@@ -76,7 +70,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		return new JwtTokenStore(accessTokenConverter());
 	}
 
-	// còdifica y decódifica
 	@Bean
 	public JwtAccessTokenConverter accessTokenConverter() {
 		JwtAccessTokenConverter jwtAccesTokenConverter = new JwtAccessTokenConverter();

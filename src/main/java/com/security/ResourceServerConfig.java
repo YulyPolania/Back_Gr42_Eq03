@@ -2,7 +2,6 @@ package com.security;
 
 import java.util.Arrays;
 
-import org.bouncycastle.util.encoders.UrlBase64;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,15 +22,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http
-				// .anonymous().disable()
 				.authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/usuarios/**").permitAll()
-				.antMatchers(HttpMethod.DELETE, "/usuarios/**").permitAll()
-				.antMatchers(HttpMethod.POST, "/usuarios/**").permitAll()
-				.antMatchers(HttpMethod.PUT, "/usuarios/**").permitAll()
 				.anyRequest().authenticated()
 				.and().cors().configurationSource(corsConfigurationSource());
-
 	}
 
 	@Bean
