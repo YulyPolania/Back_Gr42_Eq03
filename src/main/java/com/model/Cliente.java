@@ -43,10 +43,10 @@ public class Cliente {
             return "La dirección debe contener entre 8 y 100 caracteres máximo";
         } else if (!isValid("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9]{2,6}$", this.emailCliente, 60)) {
             return "Correo electrónico inválido, se permiten hata 60 caracteres, sin espacios";
-        } else if (!isValid("^[a-zA-ZÀ-ÿ\\s]{8,40}$", this.nombreCliente, 40)) {
-            return "Nombre inválido, sólo se permiten entre 8 y 40 caracteres";
-        } else if (!isValid("^[a-zA-Z0-9_-\\s]{4,40}$", this.telefonoCliente, 40)) {
-            return "El teléfono debe contener entre 4 y 40 caracteres.";
+        } else if (!isValid("^[a-zA-ZÀ-ÿ\\s]{4,40}$", this.nombreCliente, 40)) {
+            return "Nombre inválido, sólo se permiten entre 4 y 40 caracteres";
+        } else if (!isValid("^[a-zA-Z0-9\\s_-]{8,40}$", this.telefonoCliente, 40)) {
+            return "El teléfono debe contener entre 8 y 40 caracteres.";
         }
         return null;
     }

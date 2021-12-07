@@ -35,6 +35,7 @@ public class UsuarioController {
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER') or hasRole('ROLE_SUPERADMIN')")
 	@GetMapping(value = "/all")
 	public ResponseEntity<?> getAll() {
 		List<Usuario> users = null;
@@ -52,7 +53,7 @@ public class UsuarioController {
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
-	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER') or hasRole('ROLE_SUPERADMIN')")
 	@GetMapping(value = "/find/{id}")
 	public ResponseEntity<?> find(@PathVariable Long id) {
 		Usuario user = null;
@@ -72,7 +73,7 @@ public class UsuarioController {
 		return new ResponseEntity<Usuario>(user, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER') or hasRole('ROLE_SUPERADMIN')")
 	@PostMapping(value = "/save")
 	public ResponseEntity<?> save(@RequestBody Usuario usuario) {
 		Usuario user = null;
@@ -94,7 +95,7 @@ public class UsuarioController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER') or hasRole('ROLE_SUPERADMIN')")
 	@PutMapping(value = "/update/{id}")
 	public ResponseEntity<?> update(@RequestBody Usuario usuario, @PathVariable Long id) {
 		Usuario updateUser = null;
@@ -132,8 +133,7 @@ public class UsuarioController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
-	// @PreAuthorize("hasRole('ROLE_ADMIN','ROLE_MANAGER','ROLE_SUPERADMIN')")
-	@Secured({"ROLE_MANAGER","ROLE_ADMIN","ROLE_SUPERADMIN",})
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER') or hasRole('ROLE_SUPERADMIN')")
 	@DeleteMapping(value = "/delete/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		Usuario user = null;

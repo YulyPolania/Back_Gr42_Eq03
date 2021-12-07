@@ -5,4 +5,6 @@ import com.model.Sede;
 
 public interface SedeService extends GenericService<Sede, Integer> {
 
+  Boolean isSede(Integer idSede);
+
 }

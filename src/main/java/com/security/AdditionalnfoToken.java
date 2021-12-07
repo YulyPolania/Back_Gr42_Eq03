@@ -54,6 +54,7 @@ public class AdditionalnfoToken implements TokenEnhancer {
 		Map<String, Object> info = new HashMap<>();
 		info.put("sedes", getSedes(authentication.getName()).toArray());
 		info.put("permisos", getPermisos(authentication.getName()).toArray());
+		info.put("idUsuario", usuarioService.findByUserName(authentication.getName()).getCedulaUsuario().toString());
 		info.put("nombreCompleto", usuarioService.findByUserName(authentication.getName()).getNombreUsuario());
 		((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(info);
 		return accessToken;
