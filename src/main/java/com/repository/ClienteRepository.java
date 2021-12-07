@@ -4,6 +4,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.model.Cliente;
 
-public interface ClienteRepository extends MongoRepository<Cliente, Long>{
+public interface ClienteRepository extends MongoRepository<Cliente, Long> {
 
 }

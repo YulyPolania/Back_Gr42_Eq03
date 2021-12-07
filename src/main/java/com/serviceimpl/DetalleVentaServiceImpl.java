@@ -10,11 +10,11 @@ import com.repository.DetalleVentaRepository;
 import com.service.DetalleVentaService;
 
 @Service
-public class DetalleVentaServiceImpl extends GenericImpl<DetalleVenta, Long> implements DetalleVentaService{
-	
+public class DetalleVentaServiceImpl extends GenericImpl<DetalleVenta, Long> implements DetalleVentaService {
+
 	@Autowired
 	private DetalleVentaRepository detalleVentaRepository;
-	
+
 	@Override
 	protected CrudRepository<DetalleVenta, Long> getDao() {
 		return detalleVentaRepository;

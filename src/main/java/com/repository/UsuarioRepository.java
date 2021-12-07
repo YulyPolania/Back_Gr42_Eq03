@@ -5,10 +5,11 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.model.Usuario;
+
 @Repository
-public interface  UsuarioRepository extends MongoRepository<Usuario, Long> {
-	 @Query
-	Usuario findByUsername(String username);
+public interface UsuarioRepository extends MongoRepository<Usuario, Long> {
 	
+	@Query
+	Usuario findByUsername(String username);
 
 }

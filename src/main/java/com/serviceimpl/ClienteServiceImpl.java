@@ -10,11 +10,11 @@ import com.repository.ClienteRepository;
 import com.service.ClienteService;
 
 @Service
-public class ClienteServiceImpl extends GenericImpl<Cliente, Long> implements ClienteService{
-	
+public class ClienteServiceImpl extends GenericImpl<Cliente, Long> implements ClienteService {
+
 	@Autowired
 	private ClienteRepository clienteRepository;
-	
+
 	@Override
 	protected CrudRepository<Cliente, Long> getDao() {
 		return clienteRepository;
