@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -80,6 +81,37 @@ public class ProveedorController {
 		}
 		response.put("mensaje", "El proveedor ha sido creado con éxito!");
 		response.put("proveedor", supplier);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+	}
+	
+	@PutMapping(value = "/update/{id}")
+	public ResponseEntity<?> update(@RequestBody Proveedor proveedor, @PathVariable Long id) {
+		Proveedor updateSupplier = null;
+		Map<String, Object> response = new HashMap<>();
+		try {
+			Proveedor currentSupplier = proveedorService.get(id);
+			if (currentSupplier == null) {
+				response.put("mensaje",
+						"El proveedor con la cédula: ".concat(id.toString().concat(" no existe en la base de datos!")));
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			}
+			
+			if (proveedor.validate() != null) {
+				response.put("mensaje", proveedor.validate());
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+			}
+			currentSupplier.setNombreProveedor(proveedor.getNombreProveedor());
+			currentSupplier.setCiudadProveedor(proveedor.getCiudadProveedor());
+			currentSupplier.setDireccionProveedor(proveedor.getDireccionProveedor());
+			currentSupplier.setTelefonoProveedor(proveedor.getTelefonoProveedor());
+			updateSupplier = proveedorService.save(currentSupplier);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la actualización en la base de datos!");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		response.put("mensaje", "El proveedor ha sido actualizado con éxito!");
+		response.put("proveedor", updateSupplier);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 

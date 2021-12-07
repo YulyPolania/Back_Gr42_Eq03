@@ -43,8 +43,8 @@ public class Usuario {
 			return "La cédula del usuario sólo puede contener números, máximo 15 caracteres sin espacios o puntos";
 		} else if (!isValid("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9]{2,6}$", this.emailUsuario, 60)) {
 			return "Correo electrónico inválido, se permiten hata 60 caracteres, sin espacios";
-		} else if (!isValid("^[a-zA-ZÀ-ÿ\\s]{8,40}$", this.nombreUsuario, 40)) {
-			return "Nombre inválido, sólo se permiten entre 8 y 40 caracteres";
+		} else if (!isValid("^[a-zA-ZÀ-ÿ\\s]{3,40}$", this.nombreUsuario, 40)) {
+			return "Nombre inválido, sólo se permiten entre 3 y 40 caracteres";
 		}  else if (!isValid("^[a-zA-Z0-9_-]{4,40}$", this.username, 40)) {
 			return "El nombre de usuario debe contener entre 4 y 40 caracteres sin espacios.";
 		}
@@ -52,8 +52,8 @@ public class Usuario {
 	}
 
 	public String password(){
-		if (!isValid("^[a-zA-Z0-9!@#$%^&.*]{8,100}$", this.password, 100)) {
-			return "La contraseña debe contener entre 8 y 100 caracteres sin espacios o caracteres especiales";
+		if (!isValid("^[a-zA-Z0-9!@#$%^&.*]{4,100}$", this.password, 100)) {
+			return "La contraseña debe contener entre 4 y 100 caracteres sin espacios o caracteres especiales";
 		}
 		return null;
 	}

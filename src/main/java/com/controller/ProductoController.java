@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -80,6 +81,38 @@ public class ProductoController {
 		}
 		response.put("mensaje", "El producto ha sido creado con éxito!");
 		response.put("producto", product);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+	}
+
+	@PutMapping(value = "/update/{id}")
+	public ResponseEntity<?> update(@RequestBody Producto producto, @PathVariable Long id) {
+		Producto updateProduct = null;
+		Map<String, Object> response = new HashMap<>();
+		try {
+			Producto currentProduct = productoService.get(id);
+			if (currentProduct == null) {
+				response.put("mensaje",
+						"El producto con la cédula: ".concat(id.toString().concat(" no existe en la base de datos!")));
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			}
+			
+			if (producto.validate() != null) {
+				response.put("mensaje", producto.validate());
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+			}
+			currentProduct.setNombreProducto(producto.getNombreProducto());
+			currentProduct.setIvaCompra(producto.getIvaCompra());
+			currentProduct.setPrecioCompra(producto.getPrecioCompra());
+			currentProduct.setPrecioVenta(producto.getPrecioVenta());
+			currentProduct.setNitProveedor(producto.getNitProveedor());
+			updateProduct = productoService.save(currentProduct);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la actualización en la base de datos!");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		response.put("mensaje", "El producto ha sido actualizado con éxito!");
+		response.put("producto", updateProduct);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 

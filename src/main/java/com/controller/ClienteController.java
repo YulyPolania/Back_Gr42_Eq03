@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -80,6 +81,37 @@ public class ClienteController {
 		}
 		response.put("mensaje", "El cliente ha sido creado con éxito!");
 		response.put("cliente", customer);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+	}
+
+	@PutMapping(value = "/update/{id}")
+	public ResponseEntity<?> update(@RequestBody Cliente cliente, @PathVariable Long id) {
+		Cliente updateCustomer = null;
+		Map<String, Object> response = new HashMap<>();
+		try {
+			Cliente currentCustomer = clienteService.get(id);
+			if (currentCustomer == null) {
+				response.put("mensaje",
+						"El cliente con la cédula: ".concat(id.toString().concat(" no existe en la base de datos!")));
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			}
+			
+			if (cliente.validate() != null) {
+				response.put("mensaje", cliente.validate());
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+			}
+			currentCustomer.setNombreCliente(cliente.getNombreCliente());
+			currentCustomer.setEmailCliente(cliente.getEmailCliente());
+			currentCustomer.setDireccionCliente(cliente.getDireccionCliente());
+			currentCustomer.setTelefonoCliente(cliente.getTelefonoCliente());
+			updateCustomer = clienteService.save(currentCustomer);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la actualización en la base de datos!");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		response.put("mensaje", "El cliente ha sido actualizado con éxito!");
+		response.put("cliente", updateCustomer);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 

@@ -13,12 +13,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.model.Permiso;
 import com.service.PermisoService;
+import com.service.RoleService;
+import com.service.SedeService;
+import com.service.SequenceGeneratorService;
 
 @RestController
 @RequestMapping("/permisos")
@@ -27,6 +31,15 @@ public class PermisoController {
 
 	@Autowired
 	private PermisoService permisoService;
+
+	@Autowired
+	private SedeService sedeService;
+
+	@Autowired
+	private RoleService roleService;
+
+	@Autowired
+	private SequenceGeneratorService sequenceGeneratorService;
 
 	@GetMapping(value = "/all")
 	public ResponseEntity<?> getAll() {
@@ -57,7 +70,8 @@ public class PermisoController {
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		if (permiso == null) {
-			response.put("mensaje", "El permiso con el código: ".concat(id.toString().concat(" no existe en la base de datos!")));
+			response.put("mensaje",
+					"El permiso con el código: ".concat(id.toString().concat(" no existe en la base de datos!")));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Permiso>(permiso, HttpStatus.OK);
@@ -67,6 +81,23 @@ public class PermisoController {
 	public ResponseEntity<?> save(@RequestBody Permiso permiso) {
 		Permiso pass = null;
 		Map<String, Object> response = new HashMap<>();
+
+		Boolean rol = roleService.isRole(permiso.getIdRol());
+		Boolean sede = sedeService.isSede(permiso.getIdSede());
+
+		if (!(rol && sede)) {
+			String mensaje = rol ? "Id de sede no existe en la base de datos!" : "id de rol no existe en la base de datos!";
+			response.put("mensaje", mensaje);
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+		}
+
+		if (permisoService.isPermiso(permiso)) {
+			response.put("mensaje", "La combinación de rol y sede ya existe!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+		}
+		
+		Integer id = sequenceGeneratorService.generateIntegerSequence(permisoService.getAllIdPermisos());
+		permiso.setIdPermiso(id);
 		if (permiso.validate() != null) {
 			response.put("mensaje", permiso.validate());
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
@@ -80,6 +111,62 @@ public class PermisoController {
 		}
 		response.put("mensaje", "El permiso ha sido creado con éxito!");
 		response.put("permiso", pass);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+	}
+
+	@PostMapping(value = "/saveList")
+	public ResponseEntity<?> saveList(@RequestBody List<Permiso> permisos){
+		System.out.println("\n\n\n"+permisos.toString()+"\n\n\n");
+		Map<String, Object> response = new HashMap<>();
+		for(Permiso i:permisos){
+			save(i);
+		}
+		response.put("mensaje", "Permisos creados con éxito!");
+		response.put("permisos", permisos);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+	}
+
+	@PutMapping(value = "/update/{id}")
+	public ResponseEntity<?> update(@RequestBody Permiso permiso, @PathVariable Integer id) {
+		Permiso updatePermiso = null;
+		Map<String, Object> response = new HashMap<>();
+
+		Boolean rol = roleService.isRole(permiso.getIdRol());
+		Boolean sede = sedeService.isSede(permiso.getIdSede());
+
+		if (!(rol && sede)) {
+			String mensaje = rol ? "Id de sede no existe en la base de datos!" : "id de rol no existe en la base de datos!";
+			response.put("mensaje", mensaje);
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+		}
+
+		if (permisoService.isPermiso(permiso)) {
+			response.put("mensaje", "La combinación de rol y sede ya existe!");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+		}
+
+		try {
+			Permiso currentPermiso = permisoService.get(id);
+			if (currentPermiso == null) {
+				response.put("mensaje",
+						"El permiso con el id: ".concat(id.toString().concat(" no existe en la base de datos!")));
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			}
+
+			if (permiso.validate() != null) {
+				response.put("mensaje", permiso.validate());
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+			}
+			currentPermiso.setIdRol(permiso.getIdRol());
+			currentPermiso.setIdSede(permiso.getIdSede());
+			updatePermiso = permisoService.save(currentPermiso);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la actualización en la base de datos!");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		response.put("mensaje", "El permiso ha sido actualizado con éxito!");
+		response.put("permiso", updatePermiso);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
@@ -101,6 +188,20 @@ public class PermisoController {
 		}
 		response.put("mensaje", "El permiso ha sido eliminado con éxito!");
 		response.put("permiso", permiso);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+
+	@DeleteMapping(value = "/deleteByCedulaUsuario/{id}")
+	public ResponseEntity<?> deleteByCedulaUsuario(@PathVariable Long id) {
+		Map<String, Object> response = new HashMap<>();
+		try {
+			permisoService.deleteByCedulaUsuario(id);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la eliminación en la base de datos!");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		response.put("mensaje", "El permiso ha sido eliminado con éxito!");
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
 }

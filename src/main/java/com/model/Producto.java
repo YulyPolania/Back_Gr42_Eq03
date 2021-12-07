@@ -18,7 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Producto {
 	@Id
 	private Long codigoProducto;
-	private Double ivacompra;
+	private Double ivaCompra;
 	private String nombreProducto;
 	private Double precioCompra;
 	private Double precioVenta;
@@ -39,13 +39,13 @@ public class Producto {
 	public String validate() {
 		if (!isValid("^\\d{1,15}$", this.codigoProducto.toString(), 15)) {
 			return "El código del producto sólo puede contener números, máximo 15 caracteres sin espacios o puntos";
-		} else if (!isValid("^[a-zA-ZÀ-ÿ\\s]{8,40}$", this.nombreProducto, 40)) {
-			return "Nombre inválido, sólo se permiten entre 8 y 40 caracteres";
-		} else if (!isValid("^\\d{0,15}(\\.\\d{0,4}){0,1}$", this.ivacompra.toString(), 20)) {
-			return "El iva de compra sólo puede ser un decimal (.) o entero de máximo 15 caracteres y 4 decimales";
-		} else if (!isValid("^\\d{0,15}(\\.\\d{0,4}){0,1}$", this.precioCompra.toString(), 20)) {
-			return "El precio de compraa sólo puede ser un decimal (.) o entero de máximo 15 caracteres y 4 decimales";
-		} else if (!isValid("^\\d{0,15}(\\.\\d{0,4}){0,1}$", this.precioVenta.toString(), 20)) {
+		} else if (!isValid("^[a-zA-ZÀ-ÿ\\s]{3,40}$", this.nombreProducto, 40)) {
+			return "Nombre inválido, sólo se permiten entre 3 y 40 caracteres";
+		} else if (!isValid("^\\d{0,15}(\\.\\d{0,4}){0,1}$", this.ivaCompra.toString(), 12)) {
+			return "El iva de compra sólo puede ser un decimal (.) o entero de máximo 15 caracteres y 4 decimales"+this.ivaCompra;
+		} else if (!isValid("^\\d{0,15}(\\.\\d{0,4}){0,1}$", this.precioCompra.toString(), 12)) {
+			return "El precio de compra sólo puede ser un decimal (.) o entero de máximo 15 caracteres y 4 decimales";
+		} else if (!isValid("^\\d{0,15}(\\.\\d{0,4}){0,1}$", this.precioVenta.toString(), 12)) {
 			return "El precio de venta sólo puede ser un decimal (.) o entero de máximo 15 caracteres y 4 decimales";
 		} else if (!isValid("^\\d{1,15}$", this.nitProveedor.toString(), 15)) {
 			return "El nit del proveedor sólo puede contener números, máximo 15 caracteres sin espacios o puntos";
