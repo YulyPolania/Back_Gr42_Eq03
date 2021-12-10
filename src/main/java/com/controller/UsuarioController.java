@@ -43,8 +43,8 @@ public class UsuarioController {
 		try {
 			users = usuarioService.getAll();
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar la consulta en la base de datos!");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("error", "Error al realizar la consulta en la base de datos!");
+			response.put("codigo", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		if (users != null) {
@@ -61,12 +61,12 @@ public class UsuarioController {
 		try {
 			user = usuarioService.get(id);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar la consulta en la base de datos!");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("error", "Error al realizar la consulta en la base de datos!");
+			response.put("codigo", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		if (user == null) {
-			response.put("mensaje",
+			response.put("error",
 					"El usuario con la cédula: ".concat(id.toString().concat(" no existe en la base de datos!")));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
@@ -79,15 +79,15 @@ public class UsuarioController {
 		Usuario user = null;
 		Map<String, Object> response = new HashMap<>();
 		if (usuario.validate() != null) {
-			response.put("mensaje", usuario.validate());
+			response.put("error", usuario.validate());
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
 		}
 		try {
 			usuario.setPassword(bCryptPasswordEncoder.encode(usuario.getPassword()));
 			user = usuarioService.save(usuario);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar el insert en la base de datos!");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("error", "Error al realizar el insert en la base de datos!");
+			response.put("codigo", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		response.put("mensaje", "El usuario ha sido creado con éxito!");
@@ -104,19 +104,19 @@ public class UsuarioController {
 		try {
 			Usuario currentUser = usuarioService.get(id);
 			if (currentUser == null) {
-				response.put("mensaje",
+				response.put("error",
 						"El usuario con la cédula: ".concat(id.toString().concat(" no existe en la base de datos!")));
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 			}
 			if (!currentUser.getPassword().equals(usuario.getPassword())) {
 				if (usuario.password() != null) {
-					response.put("mensaje", usuario.password());
+					response.put("error", usuario.password());
 					return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
 				}
 				currentUser.setPassword(bCryptPasswordEncoder.encode(usuario.getPassword()));
 			}
 			if (usuario.validate() != null) {
-				response.put("mensaje", usuario.validate());
+				response.put("error", usuario.validate());
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
 			}
 			currentUser.setEmailUsuario(usuario.getEmailUsuario());
@@ -124,8 +124,8 @@ public class UsuarioController {
 			currentUser.setUsername(usuario.getUsername());
 			updateUser = usuarioService.save(currentUser);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar la actualización en la base de datos!");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("error", "Error al realizar la actualización en la base de datos!");
+			response.put("codigo", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		response.put("mensaje", "El usuario ha sido actualizado con éxito!");
@@ -141,13 +141,13 @@ public class UsuarioController {
 		try {
 			user = usuarioService.get(id);
 			if (user == null) {
-				response.put("mensaje", "El usuario con la cédula: ".concat(id.toString().concat(" no existe en la base!")));
+				response.put("error", "El usuario con la cédula: ".concat(id.toString().concat(" no existe en la base!")));
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 			}
 			usuarioService.delete(id);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar la eliminación en la base de datos!");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("error", "Error al realizar la eliminación en la base de datos!");
+			response.put("codigo", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		response.put("mensaje", "El usuario ha sido eliminado con éxito!");

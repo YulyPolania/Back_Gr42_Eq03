@@ -8,10 +8,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com</groupId>
-	<artifactId>Back_Gr42_Eq03ARD-2</artifactId>
+	<artifactId>Back_Gr42_Eq03</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>Back_Gr42_Eq03ARD-2</name>
+	<name>Back_Gr42_Eq03</name>
 	<description>tienda generica</description>
 	<properties>
 		<java.version>11</java.version>

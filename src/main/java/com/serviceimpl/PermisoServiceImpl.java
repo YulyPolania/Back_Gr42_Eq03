@@ -40,12 +40,17 @@ public class PermisoServiceImpl extends GenericImpl<Permiso, Integer> implements
 	@Override
 	public Boolean isPermiso(Permiso permiso) {
 		List<Permiso> list = permisoRepository.findByCedulaUsuario(permiso.getCedulaUsuario());
+		Boolean flag1 = false;
+		Boolean flag2 = false;
 		for (Permiso i : list) {
-			if (i.getIdRol() == permiso.getIdRol() && i.getIdSede() == permiso.getIdSede()) {
-				return true;
+			if (i.getIdRol() == permiso.getIdRol()) {
+				flag1 = true;
+			}
+			if (i.getIdSede() == permiso.getIdSede()) {
+				flag2 = true;
 			}
 		}
-		return false;
+		return (flag1 & flag2);
 	}
 
 	@Override
@@ -53,6 +58,6 @@ public class PermisoServiceImpl extends GenericImpl<Permiso, Integer> implements
 		List<Permiso> list = permisoRepository.findByCedulaUsuario(cedulaUsuario);
 		for (Permiso i : list) {
 			permisoRepository.deleteById(i.getIdPermiso());
-		}		
+		}
 	}
 }

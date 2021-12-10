@@ -9,11 +9,9 @@ public interface VentaService extends GenericService<Venta, Long> {
 
   List<Venta> findByCedulaCliente(Long cedulaCliente);
 
-  List<Venta> findByIdSede(Integer idSede);
+  Double[] getTotalVentas();
 
   List<String[]> getVentasByCliente();
-
-  List<String[]> getVentasBySede();
 
   List<Long> getAllCodigoVenta();
 
