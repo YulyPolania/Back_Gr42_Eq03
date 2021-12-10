@@ -55,23 +55,17 @@ public class VentaServiceImpl extends GenericImpl<Venta, Long> implements VentaS
 	}
 
 	@Override
-	public List<Venta> findByIdSede(Integer idSede) {
-		return ventaRepository.findByIdSede(idSede);
-	}
-
-	@Override
-	public List<String[]> getVentasBySede() {
-		List<String[]> resultado = new ArrayList<String[]>();
-		List<Sede> sedes = sedeRepository.findAll();
-		for (Sede i : sedes) {
-			List<Venta> ventasSede = ventaRepository.findByIdSede(i.getIdSede());
-			Double sum = 0.0;
-			for (Venta j : ventasSede) {
-				sum += j.getTotalVenta();
-			}
-			String[] registro = { i.getNombreSede(), sum.toString() };
-			resultado.add(registro);
+	public Double[] getTotalVentas() {
+		List<Venta> ventas = ventaRepository.findAll();
+		Double venta = 0.0;
+		Double iva = 0.0;
+		Double total = 0.0;
+		for (Venta i : ventas) {
+			venta += i.getTotalVenta();
+			iva += i.getIvaVenta();
+			total += i.getTotalIva();
 		}
+		Double[] resultado = { venta, iva, total };
 		return resultado;
 	}
 

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,7 @@ public class SedeController {
 	@Autowired
 	private SedeService sedeService;
 
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER') or hasRole('ROLE_SUPERADMIN')")
 	@GetMapping(value = "/all")
 	public ResponseEntity<?> getAll() {
 		List<Sede> sedees = null;
@@ -35,8 +37,8 @@ public class SedeController {
 		try {
 			sedees = sedeService.getAll();
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar la consulta en la base de datos!");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("error", "Error al realizar la consulta en la base de datos!");
+			response.put("codigo", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		if (sedees != null) {
@@ -45,6 +47,7 @@ public class SedeController {
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER') or hasRole('ROLE_SUPERADMIN')")
 	@GetMapping(value = "/find/{id}")
 	public ResponseEntity<?> find(@PathVariable Integer id) {
 		Sede sede = null;
@@ -52,30 +55,31 @@ public class SedeController {
 		try {
 			sede = sedeService.get(id);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar la consulta en la base de datos!");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("error", "Error al realizar la consulta en la base de datos!");
+			response.put("codigo", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		if (sede == null) {
-			response.put("mensaje", "La sede con el código: ".concat(id.toString().concat(" no existe en la base de datos!")));
+			response.put("error", "La sede con el código: ".concat(id.toString().concat(" no existe en la base de datos!")));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Sede>(sede, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER') or hasRole('ROLE_SUPERADMIN')")
 	@PostMapping(value = "/save")
 	public ResponseEntity<?> save(@RequestBody Sede sede) {
 		Sede sucursal = null;
 		Map<String, Object> response = new HashMap<>();
 		if (sede.validate() != null) {
-			response.put("mensaje", sede.validate());
+			response.put("error", sede.validate());
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
 		}
 		try {
 			sucursal = sedeService.save(sede);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar el insert en la base de datos!");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("error", "Error al realizar el insert en la base de datos!");
+			response.put("codigo", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		response.put("mensaje", "La sede ha sido creado con éxito!");
@@ -83,6 +87,7 @@ public class SedeController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER') or hasRole('ROLE_SUPERADMIN')")
 	@DeleteMapping(value = "/delete/{id}")
 	public ResponseEntity<?> delete(@PathVariable Integer id) {
 		Sede sede = null;
@@ -90,13 +95,13 @@ public class SedeController {
 		try {
 			sede = sedeService.get(id);
 			if (sede == null) {
-				response.put("mensaje", "La sede con el código: ".concat(id.toString().concat(" no existe en la base!")));
+				response.put("error", "La sede con el código: ".concat(id.toString().concat(" no existe en la base!")));
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 			}
 			sedeService.delete(id);
 		} catch (DataAccessException e) {
-			response.put("mensaje", "Error al realizar la eliminación en la base de datos!");
-			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			response.put("error", "Error al realizar la eliminación en la base de datos!");
+			response.put("codigo", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		response.put("mensaje", "La sede ha sido eliminado con éxito!");

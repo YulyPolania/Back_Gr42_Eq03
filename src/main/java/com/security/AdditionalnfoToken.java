@@ -43,7 +43,9 @@ public class AdditionalnfoToken implements TokenEnhancer {
 		List<Permiso> permisos = permisoService.findByCedulaUsuario(cedulaUsuario);
 		List<String> sedes = new ArrayList<String>();
 		for (Permiso i : permisos) {
-			sedes.add(sedeService.get(i.getIdSede()).getCiudadSede());
+			if (!sedes.contains(sedeService.get(i.getIdSede()).getCiudadSede())) {
+				sedes.add(sedeService.get(i.getIdSede()).getCiudadSede());
+			}
 		}
 		return sedes;
 	}
